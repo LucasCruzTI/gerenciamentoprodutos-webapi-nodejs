@@ -9,6 +9,10 @@
             {
             "url": "https://gerenciamentoprodutos-webapi-nodejs.onrender.com/api",
             "description": "url base"
+        },
+        {
+            "url": "http://localhost:3000/api",
+            "description": "url local"
         }
 
     ],
@@ -477,7 +481,7 @@
                 }
             }
         },
-        "/usuario/register":{
+        "/usuario":{
             "post": {
                 "summary" : "Cadastro de usuarios",
                 "description" : "Essa rota será responsável por cadastrar usuario possibilitando autenticação e acesso aos demais recursos",
@@ -489,7 +493,7 @@
                                 "$ref": "#/components/schemas/User"
                             },
                             "examples": {
-                                "product": {
+                                "user": {
                                     "value": {
                                         "name": "Teste",
                                         "login": "teste",
@@ -521,13 +525,198 @@
                         }
                     }
                 }
+            },
+            "get": {
+                "summary": "Listagem dos usuários",
+                "description": "Essa rota será responsável por listar os usuários registrados",
+                "tags": ["Users"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Número de itens por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "Descrição do usuário para busca",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/User"
+                                            }
+                                        },
+                                        "page": {
+                                            "type": "integer"
+                                        },
+                                        "pageSize": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
-        "/usuario/login":{
+        "/usuario/{id}": {
+            "get": {
+                "summary" : "Busca usuário pelo Id",
+                "description" : "Essa rota será responsável por buscar um usuário usando o id como parâmetro",
+                "tags": ["Users"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do usuário",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "404": {
+                        "description":"Usuário não encontrado"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/User"
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary" : "Atualiza usuário pelo Id",
+                "description" : "Essa rota será responsável por atualizar os dados de um produto usando o id como parâmetro",
+                "tags": ["Users"],
+                "security": [{"bearerAuth": []}],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/User"
+                            },
+                            "examples": {
+                                "user": {
+                                    "value": {
+                                        "name": "Teste",
+                                        "login": "teste",
+                                        "password": "senha@123",
+                                        "id": 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "404": {
+                        "description":"Usuário não encontrado"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/User"
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary" : "Deleta usuário pelo Id",
+                "description" : "Essa rota será responsável por deletar um usuário usando o id como parâmetro",
+                "tags": ["Users"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do usuário",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "404": {
+                        "description":"Usuário não encontrado"
+                    },
+                    "200": {
+                        "description": "Success"
+                        
+                    }
+                }
+            }
+        },
+        "/usuario/autenticacao":{
             "post": {
                 "summary" : "Login de usuario",
                 "description" : "Essa rota será responsável por autenticar o usuario retornando como resposta o token de segurança que autoriza o acesso aos demais ednpoints do sistema",
-                "tags": ["Users"],
+                "tags": ["Authentication"],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -545,7 +734,7 @@
                                 }
                             },
                             "examples": {
-                                "product": {
+                                "user": {
                                     "value": {
                                         "login": "teste",
                                         "password": "senha@123"
@@ -595,6 +784,18 @@
     },
     "components":{
         "schemas": {
+            "Authentication": {
+                "type": "object",
+                "properties": {
+                    "login": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": ["login", "password"]
+            },
             "Category": {
                 "type": "object",
                 "properties": {

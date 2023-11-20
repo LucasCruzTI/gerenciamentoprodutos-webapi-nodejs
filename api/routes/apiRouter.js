@@ -308,7 +308,44 @@ apiRouter.delete(endpoint + 'products/:id', checkToken, isAdmin, (req, res) => {
     });
  })
 
-apiRouter.post(endpoint + 'usuario/register', (req, res) => {
+ apiRouter.get(endpoint + 'usuario', checkToken, (req, res) => {
+
+  const {page = 1, pageSize = 10, sortBy = 'pid', sortOrder = 'asc', description} = req.query;
+  const offset = (page - 1) * pageSize;
+  
+
+  let query = knex.select('*').from('users');
+
+  // Aplicar filtro pelo nome, se fornecido
+  if (description) {
+
+      query.where('name', 'ilike', `%${description}%`);
+
+  }
+
+  // Aplicar ordenação
+  query.orderBy(sortBy, sortOrder);
+
+  // Aplicar paginação
+  query.limit(pageSize).offset(offset);
+
+  query.then(users => {
+    const result = {
+      data: users,
+      links: {
+        self: 'https://gerenciamentoprodutos-webapi-nodejs.com'+req.originalUrl, // Link para a lista atual
+      },
+    };
+
+    res.status(200).json(result);
+  }).catch(err => {
+    res.status(500).json({
+      message: 'Erro ao recuperar usuários - ' + err.message
+    });
+  });
+});
+
+apiRouter.post(endpoint + 'usuario', (req, res) => {
   knex('users')
     .insert({
       name: req.body.name,
@@ -328,7 +365,74 @@ apiRouter.post(endpoint + 'usuario/register', (req, res) => {
     })
 })
 
-apiRouter.post(endpoint + 'usuario/login', (req, res) => {
+apiRouter.get(endpoint + 'usuario/:id', checkToken, (req, res) => {
+  const usuarioId = req.params.id;
+
+  knex.select('*')
+    .from('users')
+    .where('pid', usuarioId)
+    .then(user => {
+      if (user.length > 0) {
+        const result = {
+          data: user[0],
+          links: {
+            self: 'https://gerenciamentoprodutos-webapi-nodejs.com'+req.originalUrl, // Link para o recurso atual
+            collection: 'https://gerenciamentoprodutos-webapi-nodejs.com/api/' + 'usuario', // Link para a coleção de produtos
+          },
+        };
+        res.status(200).json(result);
+      } else {
+        res.status(404).json({ message: 'Usuário não encontrado' });
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'Erro ao processar a solicitação' });
+    });
+});
+
+apiRouter.put(endpoint + 'usuario/:id', checkToken, isAdmin, (req, res) => { 
+  const usuarioId = req.params.id;
+const updatedData = req.body;
+
+knex('users')
+  .where('pid', usuarioId)
+  .update(updatedData)
+  .returning('*')  
+  .then(updated => {
+    if (updated.length > 0) {
+      res.status(200).json(updated[0]);
+    } else {
+      res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao processar a solicitação' });
+  });
+})
+
+apiRouter.delete(endpoint + 'usuario/:id', checkToken, isAdmin, (req, res) => { 
+  const usuarioId = req.params.id;
+
+knex('users')
+  .where('pid', usuarioId)
+  .del()
+  .returning('*')  
+  .then(excluded => {
+    if (excluded.length > 0) {
+      res.status(200).json(excluded[0]);
+    } else {
+      res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao processar a solicitação' });
+  });
+})
+
+apiRouter.post(endpoint + 'usuario/autenticacao', (req, res) => {
   knex
     .select('*').from('users').where({ login: req.body.login })
     .then(usuarios => {
