@@ -1,0 +1,415 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de gerenciamento de tarefas",
+        "description": "Essa API tem como objetivo o gerenciamento de tarefas, como inserção de novas tarefas, projetos, usuários e verificação dos já constantes",
+        "version": "1.0.0"
+    },
+    "servers": [
+            {
+            "url": "https://gerenciamentotarefas-webapi-nodejs.onrender.com/api",
+            "description": "url base"
+        },
+        {
+            "url": "http://localhost:3000/api",
+            "description": "url local"
+        }
+    ],
+    "paths": {
+        "/products":{
+            "post": {
+                "summary" : "Cadastro de produtos",
+                "description" : "Essa rota será responsável por cadastrar um novo produto",
+                "tags": ["Products"],
+                "security": [{"bearerAuth": []}],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Product"
+                            },
+                            "examples": {
+                                "product": {
+                                    "value": {
+                                        "quantity": 1,
+                                        "name": "Pastel de carne",
+                                        "price": 10
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "400": {
+                        "description": "Os dados do produto são obrigatórios!"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Product"
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "Listagem de produtos",
+                "description": "Essa rota será responsável por listar os produtos registrados",
+                "tags": ["Products"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Número de itens por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "Descrição do produto para busca",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Product"
+                                            }
+                                        },
+                                        "page": {
+                                            "type": "integer"
+                                        },
+                                        "pageSize": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        },
+        "/products/{id}": {
+            "get": {
+                "summary" : "Busca Produto pelo Id",
+                "description" : "Essa rota será responsável por buscar um produto usando o id como parâmetro",
+                "tags": ["Products"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do produto",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "404": {
+                        "description":"Produto não encontrado"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Product"
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary" : "Atualiza produto pelo Id",
+                "description" : "Essa rota será responsável por atualizar os dados de um produto usando o id como parâmetro",
+                "tags": ["Products"],
+                "security": [{"bearerAuth": []}],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Product"
+                            },
+                            "examples": {
+                                "product": {
+                                    "value": {
+                                        "description": "Pastel de carne com queijo",
+                                        "price": 15,
+                                        "id": 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "404": {
+                        "description":"Produto não encontrado"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Product"
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary" : "Deleta produto pelo Id",
+                "description" : "Essa rota será responsável por deletar um produto usando o id como parâmetro",
+                "tags": ["Products"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do produto",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "404": {
+                        "description":"Produto não encontrado"
+                    },
+                    "200": {
+                        "description": "Success"
+                        
+                    }
+                }
+            }
+        },
+        "/usuario/register":{
+            "post": {
+                "summary" : "Cadastro de usuarios",
+                "description" : "Essa rota será responsável por cadastrar usuario possibilitando autenticação e acesso aos demais recursos",
+                "tags": ["Users"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/User"
+                            },
+                            "examples": {
+                                "product": {
+                                    "value": {
+                                        "name": "Teste",
+                                        "login": "teste",
+                                        "password": "senha@123",
+                                        "isadmin": false
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Erro ao registrar usuario"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/usuario/login":{
+            "post": {
+                "summary" : "Login de usuario",
+                "description" : "Essa rota será responsável por autenticar o usuario retornando como resposta o token de segurança que autoriza o acesso aos demais ednpoints do sistema",
+                "tags": ["Users"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "login": { 
+                                        "description": "Identificação de acesso",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "senha",
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "product": {
+                                    "value": {
+                                        "login": "teste",
+                                        "password": "senha@123"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Erro ao verificar login"
+                    },
+                    "403": {
+                        "description": "Login ou senha incorretos"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "login": {
+                                            "type": "number"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "roles": {
+                                            "type": "string"
+                                        },
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components":{
+        "schemas": {
+            "Product": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "id": {
+                        "type": "string"
+                    }
+                },
+                "required": ["description", "price", "id"]
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "login": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "isadmin": {
+                        "type": "boolean"
+                    }
+                },
+                "required": ["name", "login", "password"]
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+    
+    
+}
