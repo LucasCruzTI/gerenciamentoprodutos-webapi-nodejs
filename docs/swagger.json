@@ -2,20 +2,247 @@
     "openapi": "3.0.0",
     "info": {
         "title": "API de gerenciamento de produtos",
-        "description": "Essa API tem como objetivo o gerenciamento de produtos, como inserção de novos produtos, usuários e verificação dos já constantes",
+        "description": "Essa API tem como objetivo o gerenciamento de produtos, como inserção de novas categorias, produtos e usuários, além da autenticação e autorização em JWT Token",
         "version": "1.0.0"
     },
     "servers": [
             {
             "url": "https://gerenciamentoprodutos-webapi-nodejs.onrender.com/api",
             "description": "url base"
-        },
-        {
-            "url": "http://localhost:3000/api",
-            "description": "url local"
         }
+
     ],
     "paths": {
+        "/category":{
+            "post": {
+                "summary" : "Cadastro de categorias",
+                "description" : "Essa rota será responsável por cadastrar uma nova categoria",
+                "tags": ["Category"],
+                "security": [{"bearerAuth": []}],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Category"
+                            },
+                            "examples": {
+                                "category": {
+                                    "value": {
+                                        "description": "Salgado"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "400": {
+                        "description": "Os dados do produto são obrigatórios!"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Category"
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "Listagem de categorias",
+                "description": "Essa rota será responsável por listar as categorias registradas",
+                "tags": ["Category"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Número de itens por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "Descrição da categoria para busca",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Category"
+                                            }
+                                        },
+                                        "page": {
+                                            "type": "integer"
+                                        },
+                                        "pageSize": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        },
+        "/category/{id}": {
+            "get": {
+                "summary" : "Busca categoria pelo Id",
+                "description" : "Essa rota será responsável por buscar uma categoria usando o id como parâmetro",
+                "tags": ["Category"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da categoria",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "404": {
+                        "description":"Produto não encontrado"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Category"
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary" : "Atualiza categoria pelo Id",
+                "description" : "Essa rota será responsável por atualizar os dados de uma categoria usando o id como parâmetro",
+                "tags": ["Category"],
+                "security": [{"bearerAuth": []}],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Category"
+                            },
+                            "examples": {
+                                "category": {
+                                    "value": {
+                                        "description": "Doces"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "404": {
+                        "description":"Categoria não encontrada"
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Category"
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary" : "Deleta categoria pelo Id",
+                "description" : "Essa rota será responsável por deletar uma categoria usando o id como parâmetro",
+                "tags": ["Category"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da categoria",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Erro ao processar a solicitação"
+                    },
+                    "401": {
+                        "description":"Unauthorized"
+                    },
+                    "404": {
+                        "description":"Categoria não encontrada"
+                    },
+                    "200": {
+                        "description": "Success"
+                        
+                    }
+                }
+            }
+        },
         "/products":{
             "post": {
                 "summary" : "Cadastro de produtos",
@@ -32,7 +259,7 @@
                                 "product": {
                                     "value": {
                                         "quantity": 1,
-                                        "name": "Pastel de carne",
+                                        "name": "Coxinha de frango",
                                         "price": 10
                                     }
                                 }
@@ -187,7 +414,7 @@
                             "examples": {
                                 "product": {
                                     "value": {
-                                        "description": "Pastel de carne com queijo",
+                                        "description": "Coxinha de frango com catupiry",
                                         "price": 15,
                                         "id": 1
                                     }
@@ -368,6 +595,15 @@
     },
     "components":{
         "schemas": {
+            "Category": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    }
+                },
+                "required": ["description"]
+            },
             "Product": {
                 "type": "object",
                 "properties": {
