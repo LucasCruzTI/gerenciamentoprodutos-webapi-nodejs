@@ -86,7 +86,7 @@ apiRouter.get(endpoint + 'products', checkToken, (req, res) => {
     const result = {
       data: products,
       links: {
-        self: 'https://gerenciamentotarefas-webapi-nodejs.com'+req.originalUrl, // Link para a lista atual
+        self: 'https://gerenciamentoprodutos-webapi-nodejs.com'+req.originalUrl, // Link para a lista atual
       },
     };
 
@@ -109,8 +109,8 @@ apiRouter.get(endpoint + 'products/:id', checkToken, (req, res) => {
         const result = {
           data: products[0],
           links: {
-            self: 'https://gerenciamentotarefas-webapi-nodejs.com'+req.originalUrl, // Link para o recurso atual
-            collection: 'https://gerenciamentotarefas-webapi-nodejs.com/api/' + 'products', // Link para a coleção de produtos
+            self: 'https://gerenciamentoprodutos-webapi-nodejs.com'+req.originalUrl, // Link para o recurso atual
+            collection: 'https://gerenciamentoprodutos-webapi-nodejs.com/api/' + 'products', // Link para a coleção de produtos
           },
         };
         res.status(200).json(result);

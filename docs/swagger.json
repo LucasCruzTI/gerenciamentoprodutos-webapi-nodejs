@@ -1,13 +1,13 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "API de gerenciamento de tarefas",
-        "description": "Essa API tem como objetivo o gerenciamento de tarefas, como inserção de novas tarefas, projetos, usuários e verificação dos já constantes",
+        "title": "API de gerenciamento de produtos",
+        "description": "Essa API tem como objetivo o gerenciamento de produtos, como inserção de novos produtos, usuários e verificação dos já constantes",
         "version": "1.0.0"
     },
     "servers": [
             {
-            "url": "https://gerenciamentotarefas-webapi-nodejs.onrender.com/api",
+            "url": "https://gerenciamentoprodutos-webapi-nodejs.onrender.com/api",
             "description": "url base"
         },
         {
